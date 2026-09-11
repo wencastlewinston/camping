@@ -109,7 +109,7 @@ async function fetchCampData() {
             const category = cat ? cat.trim() : "";
             if (category === "露營") {
                 if (listCamping) listCamping.appendChild(item);
-            } else if (category === "其他" || category === "影片") {
+            } else if (category === "友情") {
                 if (listOther) listOther.appendChild(item);
             } else {
                 if (campBody) campBody.prepend(item);
