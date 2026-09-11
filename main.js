@@ -1,4 +1,3 @@
-// main.js - 溫家堡 v2.3 啟動大腦 (無啟動畫面版)
 async function fetchCampData() {
     try {
         const response = await fetch(sheetUrl);
@@ -17,8 +16,13 @@ async function fetchCampData() {
 
         const campBody = document.getElementById('campBody');
         const listCamping = document.getElementById('list-camping');
+        const listOther = document.getElementById('list-other');
         const areaBar = document.getElementById('area-tool-bar');
-        campBody.innerHTML = ""; listCamping.innerHTML = "";
+        
+        if (campBody) campBody.innerHTML = "";
+        if (listCamping) listCamping.innerHTML = "";
+        if (listOther) listOther.innerHTML = "";
+        
         const currentTrack = {};
         const areas = new Set();
 
@@ -101,16 +105,26 @@ async function fetchCampData() {
                     <div class="camp-name-row"><span class="camp-name">${name}</span>${isUpcoming ? '<span class="status-badge">期待中</span>' : ''}</div>
                     ${altHtml}${tentHtml}
                 </div>`;
-            if (cat.trim() === "露營") listCamping.appendChild(item); else campBody.prepend(item);
+            
+            const category = cat ? cat.trim() : "";
+            if (category === "露營") {
+                if (listCamping) listCamping.appendChild(item);
+            } else if (category === "其他" || category === "影片") {
+                if (listOther) listOther.appendChild(item);
+            } else {
+                if (campBody) campBody.prepend(item);
+            }
         });
 
-        areaBar.innerHTML = '<div class="tag active area-tag" onclick="filterData(\'\', this, \'area\')">所有地區</div>';
-        Array.from(areas).sort().forEach(city => {
-            const tag = document.createElement('div');
-            tag.className = 'tag area-tag'; tag.innerText = city;
-            tag.onclick = function() { filterData(city, this, 'area'); };
-            areaBar.appendChild(tag);
-        });
+        if (areaBar) {
+            areaBar.innerHTML = '<div class="tag active area-tag" onclick="filterData(\'\', this, \'area\')">所有地區</div>';
+            Array.from(areas).sort().forEach(city => {
+                const tag = document.createElement('div');
+                tag.className = 'tag area-tag'; tag.innerText = city;
+                tag.onclick = function() { filterData(city, this, 'area'); };
+                areaBar.appendChild(tag);
+            });
+        }
         
         if(window.updateStats) updateStats();
 
