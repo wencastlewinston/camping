@@ -18,10 +18,9 @@ body, html { margin: 0; padding: 0; background: var(--bg); font-family: "Microso
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 .header-fixed { position: sticky; top: 4px; z-index: 1000; background: var(--primary); height: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.main-content { max-width: 800px; margin: 0 auto; background: white; min-height: 100vh; position: relative; }
+.main-content { max-width: 1200px; margin: 0 auto; background: white; min-height: 100vh; position: relative; box-shadow: 0 0 15px rgba(0,0,0,0.05); }
 .brand-banner { width: 100%; aspect-ratio: 16/9; background-image: url('https://wencastlewinston.github.io/lineage-Simulator/IMG_20260318_084529.png'); background-size: cover; background-position: center; position: relative; }
 
-/* 核心排版 */
 .camp-item { display: flex; padding: 15px; border-bottom: 1px solid #eee; gap: 15px; background: #fff; position: relative; box-sizing: border-box; }
 .col-thumb { width: 140px; flex-shrink: 0; position: relative; display: flex; flex-direction: column; gap: 5px; align-items: center; }
 .thumb-box { width: 100%; aspect-ratio: 16/9; border-radius: 6px; overflow: hidden; background: #eee; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
@@ -32,7 +31,6 @@ body, html { margin: 0; padding: 0; background: var(--bg); font-family: "Microso
 .camp-location { color: #000; font-size: 14px; font-weight: bold; margin-top: 1px; letter-spacing: 0.5px; }
 .camp-name { font-weight: bold; font-size: 18px; letter-spacing: 0.3px; background: linear-gradient(to right, var(--primary), var(--primary-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
 
-/* 🚀 兩欄瀏覽模式 (Grid Mode) 修正補丁 */
 body.grid-mode #campBody, 
 body.grid-mode #list-camping { 
     display: grid !important; 
@@ -52,6 +50,18 @@ body.grid-mode .col-thumb { width: 100% !important; }
 body.grid-mode .camp-name { white-space: normal !important; font-size: 14px !important; line-height: 1.3; }
 body.grid-mode .altitude-row, 
 body.grid-mode .tent-count-tag { display: none !important; }
+
+@media (min-width: 768px) {
+    .brand-banner { aspect-ratio: 21/9; }
+    #campBody, #list-camping { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+    .camp-item { border: 1px solid #eee; border-radius: 8px; }
+    body.grid-mode #campBody, body.grid-mode #list-camping { grid-template-columns: repeat(3, 1fr) !important; }
+}
+
+@media (min-width: 1024px) {
+    #campBody, #list-camping { grid-template-columns: repeat(3, 1fr); }
+    body.grid-mode #campBody, body.grid-mode #list-camping { grid-template-columns: repeat(4, 1fr) !important; }
+}
 
 .footer { padding: 40px 20px; text-align: center; background: #f8faf8; border-top: 1px solid #eee; }
 #goTopBtn { position: fixed; bottom: 30px; right: 20px; width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 2500; }
