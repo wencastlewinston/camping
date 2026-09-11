@@ -1,4 +1,3 @@
-// 介面控制工具
 function filterData(val, btn, type) {
     if (type === 'year') {
         document.querySelectorAll('.year-tag').forEach(t => t.classList.remove('active'));
@@ -42,18 +41,24 @@ function updateStats() {
 
 function toggleView() { document.body.classList.toggle("grid-mode"); }
 
-function togglePlaylist() { 
-    const content = document.getElementById('list-camping'); 
-    content.style.display = (content.style.display === "none") ? "block" : "none"; 
-    document.getElementById('arrow').innerText = (content.style.display === "none") ? "▲" : "▼";
+function togglePlaylist(type = 'camping') { 
+    const content = document.getElementById(`list-${type}`); 
+    const arrow = document.getElementById(`arrow-${type}`);
+    if (content) {
+        content.style.display = (content.style.display === "none") ? "block" : "none"; 
+        if (arrow) arrow.innerText = (content.style.display === "none") ? "▲" : "▼";
+    }
 }
 
 function reverseAll() { 
     const campBody = document.getElementById('campBody'); 
     const listCamping = document.getElementById('list-camping'); 
-    [campBody, listCamping].forEach(box => { 
-        const items = Array.from(box.children); 
-        box.innerHTML = ''; items.reverse().forEach(item => box.appendChild(item)); 
+    const listOther = document.getElementById('list-other'); 
+    [campBody, listCamping, listOther].forEach(box => { 
+        if (box) {
+            const items = Array.from(box.children); 
+            box.innerHTML = ''; items.reverse().forEach(item => box.appendChild(item)); 
+        }
     }); 
 }
 
