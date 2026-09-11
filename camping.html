@@ -71,11 +71,19 @@
         <div id="campBody"></div>
         
         <div class="playlist-card">
-            <div class="playlist-header" onclick="togglePlaylist()">
+            <div class="playlist-header" onclick="togglePlaylist('camping')">
                 <span>🍀 有種幸福是我們一起露營 ❤️</span>
-                <span id="arrow">▼</span>
+                <span id="arrow-camping">▼</span>
             </div>
             <div id="list-camping" class="playlist-content" style="display:block;"></div>
+        </div>
+
+        <div class="playlist-card">
+            <div class="playlist-header" onclick="togglePlaylist('other')">
+                <span>🎥 更多精彩影片 ❤️</span>
+                <span id="arrow-other">▼</span>
+            </div>
+            <div id="list-other" class="playlist-content" style="display:block;"></div>
         </div>
 
         <div class="footer">
