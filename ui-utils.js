@@ -23,7 +23,13 @@ function searchTable() {
 }
 
 function updateStats() {
-    const visibleItems = Array.from(document.querySelectorAll('.camp-item:not(.is-upcoming)')).filter(item => item.style.display !== 'none');
+    const mainContainers = document.querySelectorAll('#campBody, #list-camping');
+    let visibleItems = [];
+    mainContainers.forEach(container => {
+        const items = Array.from(container.querySelectorAll('.camp-item:not(.is-upcoming)')).filter(item => item.style.display !== 'none');
+        visibleItems = visibleItems.concat(items);
+    });
+
     const totalEl = document.getElementById('stat-total');
     if(totalEl) {
         document.getElementById('stat-total').innerText = visibleItems.length;
