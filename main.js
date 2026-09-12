@@ -151,6 +151,14 @@ async function fetchCampData() {
                 }
             }
 
+            let displayLocation = "";
+            if (location && location.trim() !== "") {
+                const cleanLoc = location.trim().replace(/^[\[\(\{（【]+|[\]\}\)）】]+$/g, '').trim();
+                if (cleanLoc) {
+                    displayLocation = `[${cleanLoc}]`;
+                }
+            }
+
             item.innerHTML = `
                 <div class="col-thumb">
                     <div class="thumb-box" ${mainThumbAction}>
@@ -161,7 +169,7 @@ async function fetchCampData() {
                 </div>
                 <div class="col-info">
                     <div class="camp-date">📅 ${date}${seasonIcon}${weatherIcon}</div>
-                    <div class="camp-location">[${location || '未標註'}]</div>
+                    <div class="camp-location">${displayLocation}</div>
                     <div class="camp-name-row"><span class="camp-name">${name}</span>${isUpcoming ? '<span class="status-badge">期待中</span>' : ''}</div>
                     ${altHtml}${tentHtml}
                 </div>`;
