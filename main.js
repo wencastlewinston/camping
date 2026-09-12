@@ -37,9 +37,9 @@ async function fetchCampData() {
         const currentTrack = {};
         const areas = new Set();
 
-        const createCampItem = (cols) => {
+        const createCampItem = (cols, isFriendList = false) => {
             const [cat, count, date, name, v1, v2, v3, , , altitude, location, tentCount, weather, photoLinks] = cols;
-            if (location) { const city = location.substring(0, 2); if (city) areas.add(city); }
+            if (location && !isFriendList) { const city = location.substring(0, 2); if (city) areas.add(city); }
             
             let seasonIcon = "";
             if (date) {
@@ -61,9 +61,12 @@ async function fetchCampData() {
             }
 
             const isUpcoming = !v1 || v1.trim() === "";
-            currentTrack[name] = (currentTrack[name] || 0) + 1;
-            const thisVisitNum = currentTrack[name];
-            let revisitHtml = (thisVisitNum > 1) ? `<div class="revisit-tag" data-visit="${thisVisitNum}">${"🏅".repeat(thisVisitNum)} 第 ${thisVisitNum} 訪</div>` : "";
+            let revisitHtml = "";
+            if (!isFriendList) {
+                currentTrack[name] = (currentTrack[name] || 0) + 1;
+                const thisVisitNum = currentTrack[name];
+                revisitHtml = (thisVisitNum > 1) ? `<div class="revisit-tag" data-visit="${thisVisitNum}">${"🏅".repeat(thisVisitNum)} 第 ${thisVisitNum} 訪</div>` : "";
+            }
             
             let altHtml = "";
             if (altitude) {
@@ -124,7 +127,7 @@ async function fetchCampData() {
         rowsMain.slice(1).forEach((row) => {
             const cols = processRow(row);
             if (cols.length < 4) return;
-            const { item, cat } = createCampItem(cols);
+            const { item, cat } = createCampItem(cols, false);
             if (cat === "露營") {
                 if (listCamping) listCamping.appendChild(item);
             } else {
@@ -135,7 +138,7 @@ async function fetchCampData() {
         rowsFriend.slice(1).forEach((row) => {
             const cols = processRow(row);
             if (cols.length < 4) return;
-            const { item } = createCampItem(cols);
+            const { item } = createCampItem(cols, true);
             if (listOther) listOther.appendChild(item);
         });
 
