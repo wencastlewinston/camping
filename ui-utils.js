@@ -6,42 +6,58 @@ function filterData(val, btn, type) {
         document.querySelectorAll('.area-tag').forEach(t => t.classList.remove('active'));
         currentAreaFilter = val;
     }
-    btn.classList.add('active');
+    if (btn) btn.classList.add('active');
     searchTable();
 }
 
 function searchTable() { 
-    const searchInput = document.getElementById("searchInput").value.toUpperCase(); 
+    const searchInput = document.getElementById("searchInput") ? document.getElementById("searchInput").value.toUpperCase() : ""; 
     document.querySelectorAll(".camp-item").forEach(item => { 
         const text = item.textContent.toUpperCase();
+        const locEl = item.querySelector(".camp-location");
+        const locText = locEl ? locEl.textContent.toUpperCase() : text;
+
         const matchYear = currentYearFilter === "" || text.includes(currentYearFilter);
-        const matchArea = currentAreaFilter === "" || text.includes(currentAreaFilter);
+        const matchArea = currentAreaFilter === "" || locText.includes(currentAreaFilter.toUpperCase()) || text.includes(currentAreaFilter.toUpperCase());
         const matchSearch = searchInput === "" || text.includes(searchInput);
-        item.style.display = (matchYear && matchArea && matchSearch) ? "" : "none"; 
+
+        const isMatch = matchYear && matchArea && matchSearch;
+        item.style.display = isMatch ? "" : "none"; 
     }); 
-    updateStats(); 
+    if (window.updateStats) updateStats(); 
 }
 
 function updateStats() {
     const mainContainers = document.querySelectorAll('#campBody, #list-camping');
     let visibleItems = [];
     mainContainers.forEach(container => {
-        const items = Array.from(container.querySelectorAll('.camp-item:not(.is-upcoming)')).filter(item => item.style.display !== 'none');
-        visibleItems = visibleItems.concat(items);
+        if (container) {
+            const items = Array.from(container.querySelectorAll('.camp-item:not(.is-upcoming)')).filter(item => item.style.display !== 'none');
+            visibleItems = visibleItems.concat(items);
+        }
     });
 
     const totalEl = document.getElementById('stat-total');
     if(totalEl) {
-        document.getElementById('stat-total').innerText = visibleItems.length;
-        document.getElementById('stat-camps').innerText = visibleItems.filter(item => !item.querySelector('.revisit-tag')).length;
-        document.getElementById('stat-visit2').innerText = visibleItems.filter(item => {
-            const tag = item.querySelector('.revisit-tag');
-            return tag && tag.getAttribute('data-visit') === "2";
-        }).length;
-        document.getElementById('stat-visit3').innerText = visibleItems.filter(item => {
-            const tag = item.querySelector('.revisit-tag');
-            return tag && parseInt(tag.getAttribute('data-visit')) >= 3;
-        }).length;
+        totalEl.innerText = visibleItems.length;
+        const campsEl = document.getElementById('stat-camps');
+        if (campsEl) campsEl.innerText = visibleItems.filter(item => !item.querySelector('.revisit-tag')).length;
+        
+        const visit2El = document.getElementById('stat-visit2');
+        if (visit2El) {
+            visit2El.innerText = visibleItems.filter(item => {
+                const tag = item.querySelector('.revisit-tag');
+                return tag && tag.getAttribute('data-visit') === "2";
+            }).length;
+        }
+
+        const visit3El = document.getElementById('stat-visit3');
+        if (visit3El) {
+            visit3El.innerText = visibleItems.filter(item => {
+                const tag = item.querySelector('.revisit-tag');
+                return tag && parseInt(tag.getAttribute('data-visit')) >= 3;
+            }).length;
+        }
     }
 }
 
@@ -84,7 +100,8 @@ function reverseAll() {
     boxes.forEach(box => { 
         if (box) {
             const items = Array.from(box.children); 
-            box.innerHTML = ''; items.reverse().forEach(item => box.appendChild(item)); 
+            box.innerHTML = ''; 
+            items.reverse().forEach(item => box.appendChild(item)); 
         }
     }); 
 }
