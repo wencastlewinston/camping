@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>溫家堡 WenCastle 露營足跡</title>
+    <title>溫家堡 WenCastle 影像記錄室</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="https://raw.githubusercontent.com/wencastlewinston/lineage-Simulator/main/1774111559586.png">
@@ -71,16 +71,88 @@
         <div id="campBody"></div>
         
         <div class="playlist-card">
-            <div class="playlist-header" onclick="togglePlaylist()">
-                <span>🍀 有種幸福是我們一起露營 ❤️</span>
-                <span id="arrow">▼</span>
+            <div class="playlist-header" onclick="togglePlaylist('camping')">
+                <span>⛺ 有種幸福是我們一起露營 <span class="playlist-count" id="count-camping">(0)</span></span>
+                <span id="arrow-camping">收合</span>
             </div>
             <div id="list-camping" class="playlist-content" style="display:block;"></div>
         </div>
 
+        <div class="playlist-card">
+            <div class="playlist-header" onclick="togglePlaylist('other')">
+                <span>🤝 友情相聚精彩紀錄 <span class="playlist-count" id="count-other">(0)</span></span>
+                <span id="arrow-other">展開</span>
+            </div>
+            <div id="list-other" class="playlist-content" style="display:none;"></div>
+        </div>
+
+        <div class="playlist-card">
+            <div class="playlist-header" onclick="togglePlaylist('other3')">
+                <span>🍭 歲月微甜．台越家庭幸福日常 <span class="playlist-count" id="count-other3">(0)</span></span>
+                <span id="arrow-other3">展開</span>
+            </div>
+            <div id="list-other3" class="playlist-content" style="display:none;"></div>
+        </div>
+
+        <div class="playlist-card">
+            <div class="playlist-header" onclick="togglePlaylist('other4')">
+                <span>👩‍❤️‍👨 夫妻牽手．甜蜜放閃日常 <span class="playlist-count" id="count-other4">(0)</span></span>
+                <span id="arrow-other4">展開</span>
+            </div>
+            <div id="list-other4" class="playlist-content" style="display:none;"></div>
+        </div>
+
+        <div class="playlist-card">
+            <div class="playlist-header" onclick="togglePlaylist('other5')">
+                <span>🎉 瑄寶與饅頭．小姊弟成長點滴 <span class="playlist-count" id="count-other5">(0)</span></span>
+                <span id="arrow-other5">展開</span>
+            </div>
+            <div id="list-other5" class="playlist-content" style="display:none;"></div>
+        </div>
+
+        <div class="playlist-card" style="display: none;">
+            <div class="playlist-header" onclick="togglePlaylist('other6')">
+                <span><span class="playlist-count" id="count-other6">(0)</span></span>
+                <span id="arrow-other6">展開</span>
+            </div>
+            <div id="list-other6" class="playlist-content" style="display:none;"></div>
+        </div>
+
+        <div class="playlist-card" style="display: none;">
+            <div class="playlist-header" onclick="togglePlaylist('other7')">
+                <span><span class="playlist-count" id="count-other7">(0)</span></span>
+                <span id="arrow-other7">展開</span>
+            </div>
+            <div id="list-other7" class="playlist-content" style="display:none;"></div>
+        </div>
+
+        <div class="playlist-card" style="display: none;">
+            <div class="playlist-header" onclick="togglePlaylist('other8')">
+                <span><span class="playlist-count" id="count-other8">(0)</span></span>
+                <span id="arrow-other8">展開</span>
+            </div>
+            <div id="list-other8" class="playlist-content" style="display:none;"></div>
+        </div>
+
+        <div class="playlist-card" style="display: none;">
+            <div class="playlist-header" onclick="togglePlaylist('other9')">
+                <span><span class="playlist-count" id="count-other9">(0)</span></span>
+                <span id="arrow-other9">展開</span>
+            </div>
+            <div id="list-other9" class="playlist-content" style="display:none;"></div>
+        </div>
+
+        <div class="playlist-card" style="display: none;">
+            <div class="playlist-header" onclick="togglePlaylist('other10')">
+                <span><span class="playlist-count" id="count-other10">(0)</span></span>
+                <span id="arrow-other10">展開</span>
+            </div>
+            <div id="list-other10" class="playlist-content" style="display:none;"></div>
+        </div>
+
         <div class="footer">
-            <div class="footer-big">溫士頓+玉鳳+瑄寶+饅頭=溫家堡 🏠</div>
-            <div class="footer-mid">記錄每一刻與家人共度的露營美好時光</div>
+            <div class="footer-big">溫士頓+玉鳳+瑄寶+饅頭+布丁=溫家堡 🏠</div>
+            <div class="footer-mid">記錄每一刻與家人共度的美好時光</div>
             <div class="footer-small">溫家堡 WenCastle ⓒ 2021-2026</div>
         </div>
     </div>
