@@ -65,8 +65,23 @@ async function fetchCampData() {
             const [cat, count, date, name, v1, v2, v3, , , altitude, location, tentCount, weather, photoLinks] = cols;
             if (location && location.trim() !== "") {
                 const locStr = location.trim();
-                const city = locStr.length >= 2 ? locStr.substring(0, 2) : locStr;
-                if (city) areas.add(city);
+                const cleanLoc = locStr.replace(/^[\[\(\{（【]+|[\]\}\)）】]+$/g, '').trim();
+                if (cleanLoc) {
+                    if (cleanLoc.includes("縣") || cleanLoc.includes("市")) {
+                        const cityMatch = cleanLoc.match(/^(.{2}[縣市])/);
+                        if (cityMatch) areas.add(cityMatch[1]);
+                        const rest = cleanLoc.replace(/^.{2}[縣市]/, '').trim();
+                        if (rest) {
+                            const distMatch = rest.match(/^(.{2,3}[鄉鎮市區])/);
+                            if (distMatch) areas.add(distMatch[1].replace(/[鄉鎮市區]$/, ''));
+                            else if (rest.length >= 2) areas.add(rest.substring(0, 2));
+                        }
+                    } else if (cleanLoc.length >= 2) {
+                        areas.add(cleanLoc.substring(0, 2));
+                    } else {
+                        areas.add(cleanLoc);
+                    }
+                }
             }
 
             let seasonIcon = "";
