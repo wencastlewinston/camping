@@ -113,7 +113,7 @@ async function fetchCampData() {
                 if (vid && vid.trim() !== "") {
                     let iconClass = index === 0 && (!playlist || playlist.trim() === "") ? 'fa-play' : 'fa-stop';
                     let safeVid = vid.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    const isFirstActive = index === 0 && (!v1 || v1.trim() === "");
+                    const isFirstActive = index === 0 && (!v1 || v1.trim() !== "");
                     idBtnsHtml += `<div class="id-btn red-mode ${isFirstActive ? 'active' : ''}" onclick="event.stopPropagation(); if(window.switchThumb) switchThumb(this, '${safeVid}')"><i class="fas ${iconClass}"></i></div>`;
                 }
             });
@@ -143,21 +143,21 @@ async function fetchCampData() {
             let thumbUrl = "";
             if (ytTarget && ytTarget.id && !ytTarget.isList) {
                 thumbUrl = `https://img.youtube.com/vi/${ytTarget.id}/mqdefault.jpg`;
-            } else if (ytTarget && ytTarget.isList) {
-                thumbUrl = `https://img.youtube.com/vi/${ytTarget.id}/mqdefault.jpg`;
             }
 
             let mainThumbAction = "";
-            if (!isUpcoming && ytTarget) {
+            if (!isUpcoming) {
                 const targetVal = (v1 && v1.trim() !== "") ? v1 : playlist;
-                let safeTarget = targetVal.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const ytObj = parseYoutube(targetVal);
+                const finalTarget = ytObj ? (ytObj.listId || ytObj.id) : targetVal;
+                let safeTarget = finalTarget.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 mainThumbAction = `onclick="openVid('${safeTarget}')"`;
             }
 
             item.innerHTML = `
                 <div class="col-thumb">
                     <div class="thumb-box" ${mainThumbAction}>
-                        ${isUpcoming ? `<div class="upcoming-thumb"><span class="center-text">預備..</span></div>` : (thumbUrl ? `<img src="${thumbUrl}" class="camp-thumb-img" loading="lazy">` : `<div class="upcoming-thumb"><span class="center-text">播放清單</span></div>`)}
+                        ${isUpcoming ? `<div class="upcoming-thumb"><span class="center-text">預備..</span></div>` : (thumbUrl ? `<img src="${thumbUrl}" class="camp-thumb-img" loading="lazy">` : `<div class="upcoming-thumb" style="background:#2d5a27; color:white;"><span class="center-text" style="font-size:14px;"><i class="fas fa-list" style="margin-right:4px;"></i>播放清單</span></div>`)}
                         <div class="count-badge">${count}</div>
                     </div>
                     ${isUpcoming ? '' : idBtnsHtml}${(!isUpcoming && revisitHtml) ? revisitHtml : ''}
