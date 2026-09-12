@@ -1,108 +1,192 @@
-// YouTube 解析與切換邏輯
-function parseYoutube(idOrUrl) {
-    if (!idOrUrl || idOrUrl.trim() === "") return null;
-    const str = idOrUrl.trim();
-    if (str.includes("list=")) return { id: str.split("list=")[1].split("&")[0], isList: true };
-    if (str.includes("v=")) return { id: str.split("v=")[1].split("&")[0], isList: false };
-    if (str.includes("youtu.be/")) return { id: str.split("youtu.be/")[1].split("?")[0], isList: false };
-    return { id: str, isList: false };
-}
+async function fetchCampData() {
+    try {
+        const urls = [
+            sheetUrl1, sheetUrl2, sheetUrl3, sheetUrl4, sheetUrl5,
+            sheetUrl6, sheetUrl7, sheetUrl8, sheetUrl9, sheetUrl10
+        ];
 
-function switchThumb(btn, vid) {
-    const container = btn.closest('.col-thumb');
-    const thumbImg = container.querySelector('.camp-thumb-img');
-    const thumbBox = container.querySelector('.thumb-box');
-    const btns = container.querySelectorAll('.id-btn');
-    
-    btns.forEach(b => {
-        b.classList.remove('active');
-        const icon = b.querySelector('i');
-        if (icon) { icon.classList.remove('fa-play'); icon.classList.add('fa-stop'); }
-    });
+        const responses = await Promise.all(urls.map(url => fetch(url)));
+        const dataTexts = await Promise.all(responses.map(res => res.text()));
 
-    btn.classList.add('active');
-    const currentIcon = btn.querySelector('i');
-    if (currentIcon) { currentIcon.classList.remove('fa-stop'); currentIcon.classList.add('fa-play'); }
+        const parseCsv = (text) => {
+            const rows = [];
+            let currentRow = "";
+            let insideQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                if (char === '"') insideQuotes = !insideQuotes;
+                if (char === '\n' && !insideQuotes) { rows.push(currentRow); currentRow = ""; }
+                else { currentRow += char; }
+            }
+            if (currentRow) rows.push(currentRow);
+            return rows;
+        };
 
-    const yt = parseYoutube(vid);
-    if (yt) {
-        thumbImg.src = `https://img.youtube.com/vi/${yt.id}/mqdefault.jpg`;
-        thumbBox.onclick = () => openVid(vid);
+        const allRows = dataTexts.map(text => parseCsv(text));
+
+        const campBody = document.getElementById('campBody');
+        const listContainers = [
+            document.getElementById('list-camping'),
+            document.getElementById('list-other'),
+            document.getElementById('list-other3'),
+            document.getElementById('list-other4'),
+            document.getElementById('list-other5'),
+            document.getElementById('list-other6'),
+            document.getElementById('list-other7'),
+            document.getElementById('list-other8'),
+            document.getElementById('list-other9'),
+            document.getElementById('list-other10')
+        ];
+        const areaBar = document.getElementById('area-tool-bar');
+
+        if (campBody) campBody.innerHTML = "";
+        listContainers.forEach(container => {
+            if (container) container.innerHTML = "";
+        });
+
+        const currentTrack = {};
+        const areas = new Set();
+
+        const createCampItem = (cols, isFriendList = false) => {
+            const [cat, count, date, name, v1, v2, v3, , , altitude, location, tentCount, weather, photoLinks] = cols;
+            if (location && !isFriendList) { const city = location.substring(0, 2); if (city) areas.add(city); }
+
+            let seasonIcon = "";
+            if (date) {
+                const month = parseInt(date.split('.')[1]);
+                if (month >= 3 && month <= 5) seasonIcon = " 🌸";
+                else if (month >= 6 && month <= 8) seasonIcon = " ☀️";
+                else if (month >= 9 && month <= 11) seasonIcon = " 🍁";
+                else seasonIcon = " ❄️";
+            }
+
+            let weatherIcon = "";
+            if (weather) {
+                const w = weather.trim();
+                if (w === "1") weatherIcon = " ☀️";
+                else if (w === "2") weatherIcon = " ☁️";
+                else if (w === "3") weatherIcon = " 🌧️";
+                else if (w === "4") weatherIcon = " ⛈️";
+                else if (w !== "") weatherIcon = ` ${w}`;
+            }
+
+            const isUpcoming = !v1 || v1.trim() === "";
+            let revisitHtml = "";
+            if (!isFriendList) {
+                currentTrack[name] = (currentTrack[name] || 0) + 1;
+                const thisVisitNum = currentTrack[name];
+                revisitHtml = (thisVisitNum > 1) ? `<div class="revisit-tag" data-visit="${thisVisitNum}">${"🏅".repeat(thisVisitNum)} 第 ${thisVisitNum} 訪</div>` : "";
+            }
+
+            let altHtml = "";
+            if (altitude) {
+                const altV = parseInt(altitude);
+                const barColor = altV > 1000 ? "var(--high)" : (altV > 500 ? "var(--mid)" : "var(--low)");
+                const barWidth = Math.min((altV / 2000) * 100, 100);
+                altHtml = `<div class="altitude-row"><div class="alt-bar-fill" style="width:${barWidth}%; background:${barColor}; opacity:0.3;"></div><span class="altitude-tag">⛰️ ${altitude}m</span></div>`;
+            }
+            let tentHtml = (tentCount && tentCount.trim() !== "") ? `<div class="tent-count-tag"><span>🏕️ 同行帳數：${tentCount} 帳</span></div>` : "";
+
+            let idBtnsHtml = `<div class="thumb-id-row">`;
+            [v1, v2, v3].forEach((vid, index) => {
+                if (vid && vid.trim() !== "") {
+                    let iconClass = index === 0 ? 'fa-play' : 'fa-stop';
+                    let safeVid = vid.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    idBtnsHtml += `<div class="id-btn red-mode ${index===0 ? 'active' : ''}" onclick="event.stopPropagation(); if(window.switchThumb) switchThumb(this, '${safeVid}')"><i class="fas ${iconClass}"></i></div>`;
+                }
+            });
+            if (photoLinks && photoLinks.includes("http")) {
+                let safeAlbum = photoLinks.replace(/\n/g, ' ').replace(/`/g, '\\`').replace(/'/g, "\\'");
+                idBtnsHtml += `<span class="album-icon-btn" onclick="event.stopPropagation(); if(window.openAlbum) openAlbum(\`${safeAlbum}\`)">📸</span>`;
+            }
+            idBtnsHtml += `</div>`;
+
+            const item = document.createElement('div');
+            item.className = `camp-item fade-in ${isUpcoming ? 'is-upcoming' : ''}`;
+            
+            const yt1 = (window.parseYoutube) ? parseYoutube(v1) : null;
+            let thumbUrl = "";
+            if (yt1) {
+                thumbUrl = `https://img.youtube.com/vi/${yt1.id}/mqdefault.jpg`;
+            }
+
+            let safeV1 = v1 ? v1.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
+
+            item.innerHTML = `
+                <div class="col-thumb">
+                    <div class="thumb-box" ${(!isUpcoming && yt1) ? `onclick="openVid('${safeV1}')"` : ''}>
+                        ${isUpcoming ? `<div class="upcoming-thumb"><span class="center-text">預備..</span></div>` : `<img src="${thumbUrl}" class="camp-thumb-img" loading="lazy">`}
+                        <div class="count-badge">${count}</div>
+                    </div>
+                    ${isUpcoming ? '' : idBtnsHtml}${(!isUpcoming && revisitHtml) ? revisitHtml : ''}
+                </div>
+                <div class="col-info">
+                    <div class="camp-date">📅 ${date}${seasonIcon}${weatherIcon}</div>
+                    <div class="camp-location">[${location || '未標註'}]</div>
+                    <div class="camp-name-row"><span class="camp-name">${name}</span>${isUpcoming ? '<span class="status-badge">期待中</span>' : ''}</div>
+                    ${altHtml}${tentHtml}
+                </div>`;
+            return { item, cat: cat ? cat.trim() : "" };
+        };
+
+        const processRow = (row) => {
+            const cols = [];
+            let currCol = "";
+            let inQ = false;
+            for (let i = 0; i < row.length; i++) {
+                const c = row[i];
+                if (c === '"') inQ = !inQ;
+                else if (c === ',' && !inQ) { cols.push(currCol.trim()); currCol = ""; }
+                else currCol += c;
+            }
+            cols.push(currCol.trim());
+            return cols;
+        };
+
+        allRows[0].slice(1).forEach((row) => {
+            const cols = processRow(row);
+            if (cols.length < 4) return;
+            const { item, cat } = createCampItem(cols, false);
+            if (cat === "露營") {
+                if (listContainers[0]) listContainers[0].appendChild(item);
+            } else {
+                if (campBody) campBody.prepend(item);
+            }
+        });
+
+        for (let i = 1; i < 10; i++) {
+            if (allRows[i]) {
+                allRows[i].slice(1).forEach((row) => {
+                    const cols = processRow(row);
+                    if (cols.length < 4) return;
+                    const { item } = createCampItem(cols, true);
+                    if (listContainers[i]) listContainers[i].appendChild(item);
+                });
+            }
+        }
+
+        if (areaBar) {
+            areaBar.innerHTML = '';
+            const allTag = document.createElement('div');
+            allTag.className = 'tag active area-tag';
+            allTag.innerText = '所有地區';
+            allTag.onclick = function() { filterData('', this, 'area'); };
+            areaBar.appendChild(allTag);
+
+            Array.from(areas).sort().forEach(city => {
+                const tag = document.createElement('div');
+                tag.className = 'tag area-tag'; 
+                tag.innerText = city;
+                tag.onclick = function() { filterData(city, this, 'area'); };
+                areaBar.appendChild(tag);
+            });
+        }
+
+        if(window.updateStats) updateStats();
+
+    } catch (e) {
+        console.error("載入失敗：", e);
     }
 }
 
-function openVid(u) { 
-    const yt = parseYoutube(u); 
-    if(!yt) return; 
-    document.getElementById('popup_player').src = yt.isList ? `https://www.youtube.com/embed/videoseries?list=${yt.id}&autoplay=1` : `https://www.youtube.com/embed/${yt.id}?autoplay=1`; 
-    document.getElementById('videoOverlay').style.display = 'flex'; 
-}
-
-function closeVid() { 
-    document.getElementById('popup_player').src = ""; 
-    document.getElementById('videoOverlay').style.display = 'none'; 
-}
-
-function openAlbum(linksText) {
-    if (!linksText || linksText.trim() === "" || linksText === "undefined") return;
-    currentAlbum = linksText.replace(/"/g, '').split(/[\s,]+/).filter(link => link.startsWith('http'));
-    if (currentAlbum.length === 0) return;
-    currentIndex = 0;
-    renderPhoto();
-    document.getElementById('albumOverlay').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-function renderPhoto() {
-    const mainPhoto = document.getElementById('mainPhoto');
-    const strip = document.getElementById('filmstrip');
-    mainPhoto.style.opacity = '0.5';
-    mainPhoto.src = currentAlbum[currentIndex];
-    mainPhoto.onload = () => { mainPhoto.style.opacity = '1'; };
-    strip.innerHTML = "";
-    currentAlbum.forEach((link, index) => {
-        const img = document.createElement('img');
-        img.src = link.includes('iili.io') ? link.replace(/\.(jpg|png|jpeg)$/i, '.md.$1') : link; 
-        img.className = `strip-thumb ${index === currentIndex ? 'active' : ''}`;
-        img.onclick = (e) => { e.stopPropagation(); stopAutoPlay(); currentIndex = index; renderPhoto(); };
-        strip.appendChild(img);
-    });
-    const activeThumb = strip.querySelector('.active');
-    if (activeThumb) activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-}
-
-function toggleAutoPlay() { if (isAutoPlaying) stopAutoPlay(); else startAutoPlay(); }
-function startAutoPlay() {
-    if (currentAlbum.length <= 1) return;
-    isAutoPlaying = true;
-    const btn = document.getElementById('autoPlayBtn');
-    if (btn) { btn.innerText = "⏸️"; btn.classList.add('playing'); }
-    autoPlayTimer = setInterval(() => {
-        currentIndex = (currentIndex < currentAlbum.length - 1) ? currentIndex + 1 : 0;
-        renderPhoto();
-    }, 3000);
-}
-function stopAutoPlay() {
-    isAutoPlaying = false;
-    const btn = document.getElementById('autoPlayBtn');
-    if (btn) { btn.innerText = "▶️"; btn.classList.remove('playing'); }
-    if (autoPlayTimer) { clearInterval(autoPlayTimer); autoPlayTimer = null; }
-}
-function closeAlbum() { 
-    stopAutoPlay();
-    document.getElementById('albumOverlay').style.display = 'none'; 
-    document.body.style.overflow = 'auto';
-}
-
-// 觸控手勢
-const albumOverlay = document.getElementById('albumOverlay');
-if (albumOverlay) {
-    albumOverlay.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, false);
-    albumOverlay.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; 
-        if (Math.abs(touchEndX - touchStartX) > 50) {
-            stopAutoPlay();
-            if (touchEndX < touchStartX) { if (currentIndex < currentAlbum.length - 1) { currentIndex++; renderPhoto(); } }
-            else { if (currentIndex > 0) { currentIndex--; renderPhoto(); } }
-        }
-    }, false);
-}
+fetchCampData();
