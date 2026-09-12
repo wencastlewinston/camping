@@ -83,7 +83,7 @@ async function fetchCampData() {
             let weatherIcon = "";
             if (weather) {
                 const w = weather.trim();
-                if (w === "1") weatherIcon = " ☀️";
+                if (w === "1") weatherIcon = "🌤️";
                 else if (w === "2") weatherIcon = " ☁️";
                 else if (w === "3") weatherIcon = " 🌧️";
                 else if (w === "4") weatherIcon = " ⛈️";
