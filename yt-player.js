@@ -1,26 +1,35 @@
 function parseYoutube(idOrUrl) {
     if (!idOrUrl || idOrUrl.trim() === "") return null;
     const str = idOrUrl.trim();
+
     if (str.includes("list=")) {
         const listId = str.split("list=")[1].split("&")[0];
         return { id: listId, listId: listId, isList: true };
     }
-    if (str.startsWith("PL") || str.startsWith("OLAK5uy_") || (str.length > 10 && !str.includes("v=") && !str.includes("youtu.be/") && !str.includes("shorts/") && !str.includes("/"))) {
+
+    if (str.startsWith("PL") || str.startsWith("OLAK5uy_")) {
         return { id: str, listId: str, isList: true };
     }
+
+    let vid = null;
     if (str.includes("shorts/")) {
-        const vid = str.split("shorts/")[1].split("?")[0].split("&")[0];
-        return { id: vid, listId: null, isList: false, isShorts: true };
+        vid = str.split("shorts/")[1].split("?")[0].split("&")[0].split("/")[0];
+    } else if (str.includes("v=")) {
+        vid = str.split("v=")[1].split("&")[0];
+    } else if (str.includes("youtu.be/")) {
+        vid = str.split("youtu.be/")[1].split("?")[0].split("&")[0];
+    } else {
+        const match = str.match(/([a-zA-Z0-9_-]{11})/);
+        if (match) {
+            vid = match[1];
+        }
     }
-    if (str.includes("v=")) {
-        const vid = str.split("v=")[1].split("&")[0];
+
+    if (vid) {
         return { id: vid, listId: null, isList: false };
     }
-    if (str.includes("youtu.be/")) {
-        const vid = str.split("youtu.be/")[1].split("?")[0];
-        return { id: vid, listId: null, isList: false };
-    }
-    return { id: str, listId: null, isList: false };
+
+    return null;
 }
 
 function switchThumb(btn, vid) {
