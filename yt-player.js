@@ -5,7 +5,7 @@ function parseYoutube(idOrUrl) {
         const listId = str.split("list=")[1].split("&")[0];
         return { id: listId, listId: listId, isList: true };
     }
-    if (str.startsWith("PL") || str.startsWith("OLAK5uy_")) {
+    if (str.startsWith("PL") || str.startsWith("OLAK5uy_") || (str.length > 10 && !str.includes("v=") && !str.includes("youtu.be/") && !str.includes("/"))) {
         return { id: str, listId: str, isList: true };
     }
     if (str.includes("v=")) {
