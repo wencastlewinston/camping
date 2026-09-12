@@ -10,7 +10,7 @@ function parseYoutube(idOrUrl) {
     }
     if (str.includes("shorts/")) {
         const vid = str.split("shorts/")[1].split("?")[0].split("&")[0];
-        return { id: vid, listId: null, isList: false };
+        return { id: vid, listId: null, isList: false, isShorts: true };
     }
     if (str.includes("v=")) {
         const vid = str.split("v=")[1].split("&")[0];
@@ -56,6 +56,8 @@ function openVid(u) {
     if (player) {
         if (yt.isList) {
             player.src = `https://www.youtube.com/embed/videoseries?list=${yt.id}&autoplay=1&loop=1`;
+        } else if (yt.isShorts) {
+            player.src = `https://www.youtube.com/embed/${yt.id}?autoplay=1&loop=1&playlist=${yt.id}`;
         } else {
             player.src = `https://www.youtube.com/embed/${yt.id}?autoplay=1`;
         }
