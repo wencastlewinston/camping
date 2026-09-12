@@ -184,7 +184,7 @@ async function fetchCampData() {
                 const countEl = document.getElementById(countIds[idx]);
                 if (countEl) {
                     const totalItems = container.querySelectorAll('.camp-item').length;
-                    countEl.innerText = `(🎬 ${totalItems})`;
+                    countEl.innerText = `(${totalItems})`;
                 }
             }
         });
