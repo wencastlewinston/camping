@@ -51,7 +51,7 @@ function openVid(u) {
     const overlay = document.getElementById('videoOverlay');
     if (player) {
         if (yt.isList) {
-            player.src = `https://www.youtube.com/embed/videoseries?list=${yt.id}&autoplay=1&loop=1&enablejsapi=1`;
+            player.src = `https://www.youtube.com/embed/videoseries?list=${yt.id}&autoplay=1&loop=1`;
         } else {
             player.src = `https://www.youtube.com/embed/${yt.id}?autoplay=1`;
         }
