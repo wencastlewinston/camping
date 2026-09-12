@@ -116,7 +116,9 @@ async function fetchCampData() {
                 }
             });
             if (playlist && playlist.trim() !== "") {
-                let safePl = playlist.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const ytPl = (window.parseYoutube) ? parseYoutube(playlist) : null;
+                const plTarget = ytPl ? (ytPl.listId || ytPl.id) : playlist;
+                let safePl = plTarget.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 idBtnsHtml += `<div class="id-btn red-mode" onclick="event.stopPropagation(); if(window.openVid) openVid('${safePl}')"><i class="fas fa-list"></i></div>`;
             }
             if (photoLinks && photoLinks.includes("http")) {
