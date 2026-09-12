@@ -90,7 +90,8 @@ async function fetchCampData() {
                 else if (w !== "") weatherIcon = ` ${w}`;
             }
 
-            const isUpcoming = !v1 || v1.trim() === "";
+            const hasVideo = (v1 && v1.trim() !== "") || (v2 && v2.trim() !== "") || (v3 && v3.trim() !== "") || (playlist && playlist.trim() !== "");
+            const isUpcoming = !hasVideo;
             let revisitHtml = "";
             if (!isFriendList) {
                 currentTrack[name] = (currentTrack[name] || 0) + 1;
@@ -112,14 +113,15 @@ async function fetchCampData() {
                 if (vid && vid.trim() !== "") {
                     let iconClass = index === 0 ? 'fa-play' : 'fa-stop';
                     let safeVid = vid.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    idBtnsHtml += `<div class="id-btn red-mode ${index===0 ? 'active' : ''}" onclick="event.stopPropagation(); if(window.switchThumb) switchThumb(this, '${safeVid}')"><i class="fas ${iconClass}"></i></div>`;
+                    idBtnsHtml += `<div class="id-btn red-mode ${index===0 && (!playlist || playlist.trim() === "") ? 'active' : ''}" onclick="event.stopPropagation(); if(window.switchThumb) switchThumb(this, '${safeVid}')"><i class="fas ${iconClass}"></i></div>`;
                 }
             });
             if (playlist && playlist.trim() !== "") {
                 const ytPl = (window.parseYoutube) ? parseYoutube(playlist) : null;
                 const plTarget = ytPl ? (ytPl.listId || ytPl.id) : playlist;
                 let safePl = plTarget.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                idBtnsHtml += `<div class="id-btn red-mode" onclick="event.stopPropagation(); if(window.openVid) openVid('${safePl}')"><i class="fas fa-list"></i></div>`;
+                const isFirstActive = (!v1 || v1.trim() === "");
+                idBtnsHtml += `<div class="id-btn red-mode ${isFirstActive ? 'active' : ''}" onclick="event.stopPropagation(); if(window.openVid) openVid('${safePl}')"><i class="fas fa-list"></i></div>`;
             }
             if (photoLinks && photoLinks.includes("http")) {
                 let safeAlbum = photoLinks.replace(/\n/g, ' ').replace(/`/g, '\\`').replace(/'/g, "\\'");
@@ -136,11 +138,22 @@ async function fetchCampData() {
                 thumbUrl = `https://img.youtube.com/vi/${yt1.id}/mqdefault.jpg`;
             }
 
-            let safeV1 = v1 ? v1.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
+            let mainThumbAction = "";
+            if (!isUpcoming) {
+                if (v1 && v1.trim() !== "") {
+                    let safeV1 = v1.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    mainThumbAction = `onclick="openVid('${safeV1}')"`;
+                } else if (playlist && playlist.trim() !== "") {
+                    const ytPl = parseYoutube(playlist);
+                    const plTarget = ytPl ? (ytPl.listId || ytPl.id) : playlist;
+                    let safePl = plTarget.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    mainThumbAction = `onclick="openVid('${safePl}')"`;
+                }
+            }
 
             item.innerHTML = `
                 <div class="col-thumb">
-                    <div class="thumb-box" ${(!isUpcoming && yt1) ? `onclick="openVid('${safeV1}')"` : ''}>
+                    <div class="thumb-box" ${mainThumbAction}>
                         ${isUpcoming ? `<div class="upcoming-thumb"><span class="center-text">預備..</span></div>` : `<img src="${thumbUrl}" class="camp-thumb-img" loading="lazy">`}
                         <div class="count-badge">${count}</div>
                     </div>
