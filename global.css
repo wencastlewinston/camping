@@ -32,8 +32,8 @@ body, html { margin: 0; padding: 0; background: var(--bg); font-family: "Microso
 .camp-name { font-weight: bold; font-size: 18px; letter-spacing: 0.3px; background: linear-gradient(to right, var(--primary), var(--primary-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
 
 body.grid-mode #campBody, 
-body.grid-mode #list-camping,
-body.grid-mode #list-other { 
+body.grid-mode #list-camping:not([style*="display: none"]),
+body.grid-mode #list-other:not([style*="display: none"]) { 
     display: grid !important; 
     grid-template-columns: 1fr 1fr !important; 
     gap: 8px !important; 
@@ -54,14 +54,22 @@ body.grid-mode .tent-count-tag { display: none !important; }
 
 @media (min-width: 768px) {
     .brand-banner { aspect-ratio: 21/9; }
-    #campBody, #list-camping, #list-other { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+    #campBody, 
+    #list-camping:not([style*="display: none"]), 
+    #list-other:not([style*="display: none"]) { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
     .camp-item { border: 1px solid #eee; border-radius: 8px; }
-    body.grid-mode #campBody, body.grid-mode #list-camping, body.grid-mode #list-other { grid-template-columns: repeat(3, 1fr) !important; }
+    body.grid-mode #campBody, 
+    body.grid-mode #list-camping:not([style*="display: none"]), 
+    body.grid-mode #list-other:not([style*="display: none"]) { grid-template-columns: repeat(3, 1fr) !important; }
 }
 
 @media (min-width: 1024px) {
-    #campBody, #list-camping, #list-other { grid-template-columns: repeat(3, 1fr); }
-    body.grid-mode #campBody, body.grid-mode #list-camping, body.grid-mode #list-other { grid-template-columns: repeat(4, 1fr) !important; }
+    #campBody, 
+    #list-camping:not([style*="display: none"]), 
+    #list-other:not([style*="display: none"]) { grid-template-columns: repeat(3, 1fr); }
+    body.grid-mode #campBody, 
+    body.grid-mode #list-camping:not([style*="display: none"]), 
+    body.grid-mode #list-other:not([style*="display: none"]) { grid-template-columns: repeat(4, 1fr) !important; }
 }
 
 .footer { padding: 40px 20px; text-align: center; background: #f8faf8; border-top: 1px solid #eee; }
