@@ -12,16 +12,20 @@ function parseYoutube(idOrUrl) {
         return { id: vid, listId: listId, isList: false };
     }
     if (str.includes("list=")) {
-        return { id: str.split("list=")[1].split("&")[0], listId: str.split("list=")[1].split("&")[0], isList: true };
+        const listId = str.split("list=")[1].split("&")[0];
+        return { id: listId, listId: listId, isList: true };
+    }
+    if (str.startsWith("PL") || str.startsWith("OLAK5uy_")) {
+        return { id: str, listId: str, isList: true };
     }
     return { id: str, listId: null, isList: false };
 }
 
 function switchThumb(btn, vid) {
     const container = btn.closest('.col-thumb');
-    const thumbImg = container.querySelector('.camp-thumb-img');
-    const thumbBox = container.querySelector('.thumb-box');
-    const btns = container.querySelectorAll('.id-btn');
+    const thumbImg = container ? container.querySelector('.camp-thumb-img') : null;
+    const thumbBox = container ? container.querySelector('.thumb-box') : null;
+    const btns = container ? container.querySelectorAll('.id-btn') : [];
     
     btns.forEach(b => {
         b.classList.remove('active');
