@@ -1,22 +1,20 @@
 function parseYoutube(idOrUrl) {
     if (!idOrUrl || idOrUrl.trim() === "") return null;
     const str = idOrUrl.trim();
-    if (str.includes("v=")) {
-        const vid = str.split("v=")[1].split("&")[0];
-        const listId = str.includes("list=") ? str.split("list=")[1].split("&")[0] : null;
-        return { id: vid, listId: listId, isList: false };
-    }
-    if (str.includes("youtu.be/")) {
-        const vid = str.split("youtu.be/")[1].split("?")[0];
-        const listId = str.includes("list=") ? str.split("list=")[1].split("&")[0] : null;
-        return { id: vid, listId: listId, isList: false };
-    }
     if (str.includes("list=")) {
         const listId = str.split("list=")[1].split("&")[0];
         return { id: listId, listId: listId, isList: true };
     }
     if (str.startsWith("PL") || str.startsWith("OLAK5uy_")) {
         return { id: str, listId: str, isList: true };
+    }
+    if (str.includes("v=")) {
+        const vid = str.split("v=")[1].split("&")[0];
+        return { id: vid, listId: null, isList: false };
+    }
+    if (str.includes("youtu.be/")) {
+        const vid = str.split("youtu.be/")[1].split("?")[0];
+        return { id: vid, listId: null, isList: false };
     }
     return { id: str, listId: null, isList: false };
 }
@@ -54,8 +52,6 @@ function openVid(u) {
     if (player) {
         if (yt.isList) {
             player.src = `https://www.youtube.com/embed/videoseries?list=${yt.id}&autoplay=1`;
-        } else if (yt.listId) {
-            player.src = `https://www.youtube.com/embed/${yt.id}?list=${yt.listId}&autoplay=1`;
         } else {
             player.src = `https://www.youtube.com/embed/${yt.id}?autoplay=1`;
         }
