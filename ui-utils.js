@@ -46,7 +46,7 @@ function togglePlaylist(type = 'camping') {
     const arrow = document.getElementById(`arrow-${type}`);
     if (content) {
         content.style.display = (content.style.display === "none") ? "block" : "none"; 
-        if (arrow) arrow.innerText = (content.style.display === "none") ? "▲" : "▼";
+        if (arrow) arrow.innerText = (content.style.display === "none") ? "展開" : "收合";
     }
 }
 
