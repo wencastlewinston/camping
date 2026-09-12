@@ -37,6 +37,20 @@ async function fetchCampData() {
             document.getElementById('list-other9'),
             document.getElementById('list-other10')
         ];
+
+        const countIds = [
+            'count-camping',
+            'count-other',
+            'count-other3',
+            'count-other4',
+            'count-other5',
+            'count-other6',
+            'count-other7',
+            'count-other8',
+            'count-other9',
+            'count-other10'
+        ];
+
         const areaBar = document.getElementById('area-tool-bar');
 
         if (campBody) campBody.innerHTML = "";
@@ -164,6 +178,16 @@ async function fetchCampData() {
                 });
             }
         }
+
+        listContainers.forEach((container, idx) => {
+            if (container) {
+                const countEl = document.getElementById(countIds[idx]);
+                if (countEl) {
+                    const totalItems = container.querySelectorAll('.camp-item').length;
+                    countEl.innerText = `(${totalItems})`;
+                }
+            }
+        });
 
         if (areaBar) {
             areaBar.innerHTML = '';
