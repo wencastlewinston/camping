@@ -111,17 +111,18 @@ async function fetchCampData() {
             let idBtnsHtml = `<div class="thumb-id-row">`;
             [v1, v2, v3].forEach((vid, index) => {
                 if (vid && vid.trim() !== "") {
-                    let iconClass = index === 0 ? 'fa-play' : 'fa-stop';
+                    let iconClass = index === 0 && (!playlist || playlist.trim() === "") ? 'fa-play' : 'fa-stop';
                     let safeVid = vid.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    idBtnsHtml += `<div class="id-btn red-mode ${index===0 && (!playlist || playlist.trim() === "") ? 'active' : ''}" onclick="event.stopPropagation(); if(window.switchThumb) switchThumb(this, '${safeVid}')"><i class="fas ${iconClass}"></i></div>`;
+                    const isFirstActive = index === 0 && (!v1 || v1.trim() === "");
+                    idBtnsHtml += `<div class="id-btn red-mode ${isFirstActive ? 'active' : ''}" onclick="event.stopPropagation(); if(window.switchThumb) switchThumb(this, '${safeVid}')"><i class="fas ${iconClass}"></i></div>`;
                 }
             });
             if (playlist && playlist.trim() !== "") {
                 const ytPl = (window.parseYoutube) ? parseYoutube(playlist) : null;
                 const plTarget = ytPl ? (ytPl.listId || ytPl.id) : playlist;
                 let safePl = plTarget.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                const isFirstActive = (!v1 || v1.trim() === "");
-                idBtnsHtml += `<div class="id-btn red-mode ${isFirstActive ? 'active' : ''}" onclick="event.stopPropagation(); if(window.openVid) openVid('${safePl}')"><i class="fas fa-list"></i></div>`;
+                const isPlActive = (!v1 || v1.trim() === "");
+                idBtnsHtml += `<div class="id-btn red-mode ${isPlActive ? 'active' : ''}" onclick="event.stopPropagation(); if(window.openVid) openVid('${safePl}')"><i class="fas fa-list"></i></div>`;
             }
             if (photoLinks && photoLinks.includes("http")) {
                 let safeAlbum = photoLinks.replace(/\n/g, ' ').replace(/`/g, '\\`').replace(/'/g, "\\'");
@@ -132,29 +133,31 @@ async function fetchCampData() {
             const item = document.createElement('div');
             item.className = `camp-item fade-in ${isUpcoming ? 'is-upcoming' : ''}`;
             
-            const yt1 = (window.parseYoutube) ? parseYoutube(v1) : null;
+            let ytTarget = null;
+            if (v1 && v1.trim() !== "") {
+                ytTarget = (window.parseYoutube) ? parseYoutube(v1) : null;
+            } else if (playlist && playlist.trim() !== "") {
+                ytTarget = (window.parseYoutube) ? parseYoutube(playlist) : null;
+            }
+
             let thumbUrl = "";
-            if (yt1) {
-                thumbUrl = `https://img.youtube.com/vi/${yt1.id}/mqdefault.jpg`;
+            if (ytTarget && ytTarget.id && !ytTarget.isList) {
+                thumbUrl = `https://img.youtube.com/vi/${ytTarget.id}/mqdefault.jpg`;
+            } else if (ytTarget && ytTarget.isList) {
+                thumbUrl = `https://img.youtube.com/vi/${ytTarget.id}/mqdefault.jpg`;
             }
 
             let mainThumbAction = "";
-            if (!isUpcoming) {
-                if (v1 && v1.trim() !== "") {
-                    let safeV1 = v1.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    mainThumbAction = `onclick="openVid('${safeV1}')"`;
-                } else if (playlist && playlist.trim() !== "") {
-                    const ytPl = parseYoutube(playlist);
-                    const plTarget = ytPl ? (ytPl.listId || ytPl.id) : playlist;
-                    let safePl = plTarget.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    mainThumbAction = `onclick="openVid('${safePl}')"`;
-                }
+            if (!isUpcoming && ytTarget) {
+                const targetVal = (v1 && v1.trim() !== "") ? v1 : playlist;
+                let safeTarget = targetVal.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                mainThumbAction = `onclick="openVid('${safeTarget}')"`;
             }
 
             item.innerHTML = `
                 <div class="col-thumb">
                     <div class="thumb-box" ${mainThumbAction}>
-                        ${isUpcoming ? `<div class="upcoming-thumb"><span class="center-text">預備..</span></div>` : `<img src="${thumbUrl}" class="camp-thumb-img" loading="lazy">`}
+                        ${isUpcoming ? `<div class="upcoming-thumb"><span class="center-text">預備..</span></div>` : (thumbUrl ? `<img src="${thumbUrl}" class="camp-thumb-img" loading="lazy">` : `<div class="upcoming-thumb"><span class="center-text">播放清單</span></div>`)}
                         <div class="count-badge">${count}</div>
                     </div>
                     ${isUpcoming ? '' : idBtnsHtml}${(!isUpcoming && revisitHtml) ? revisitHtml : ''}
