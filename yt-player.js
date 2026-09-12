@@ -5,8 +5,12 @@ function parseYoutube(idOrUrl) {
         const listId = str.split("list=")[1].split("&")[0];
         return { id: listId, listId: listId, isList: true };
     }
-    if (str.startsWith("PL") || str.startsWith("OLAK5uy_") || (str.length > 10 && !str.includes("v=") && !str.includes("youtu.be/") && !str.includes("/"))) {
+    if (str.startsWith("PL") || str.startsWith("OLAK5uy_") || (str.length > 10 && !str.includes("v=") && !str.includes("youtu.be/") && !str.includes("shorts/") && !str.includes("/"))) {
         return { id: str, listId: str, isList: true };
+    }
+    if (str.includes("shorts/")) {
+        const vid = str.split("shorts/")[1].split("?")[0].split("&")[0];
+        return { id: vid, listId: null, isList: false };
     }
     if (str.includes("v=")) {
         const vid = str.split("v=")[1].split("&")[0];
