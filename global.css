@@ -33,7 +33,15 @@ body, html { margin: 0; padding: 0; background: var(--bg); font-family: "Microso
 
 body.grid-mode #campBody, 
 body.grid-mode #list-camping:not([style*="display: none"]),
-body.grid-mode #list-other:not([style*="display: none"]) { 
+body.grid-mode #list-other:not([style*="display: none"]),
+body.grid-mode #list-other3:not([style*="display: none"]),
+body.grid-mode #list-other4:not([style*="display: none"]),
+body.grid-mode #list-other5:not([style*="display: none"]),
+body.grid-mode #list-other6:not([style*="display: none"]),
+body.grid-mode #list-other7:not([style*="display: none"]),
+body.grid-mode #list-other8:not([style*="display: none"]),
+body.grid-mode #list-other9:not([style*="display: none"]),
+body.grid-mode #list-other10:not([style*="display: none"]) { 
     display: grid !important; 
     grid-template-columns: 1fr 1fr !important; 
     gap: 8px !important; 
@@ -56,20 +64,52 @@ body.grid-mode .tent-count-tag { display: none !important; }
     .brand-banner { aspect-ratio: 21/9; }
     #campBody, 
     #list-camping:not([style*="display: none"]), 
-    #list-other:not([style*="display: none"]) { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+    #list-other:not([style*="display: none"]),
+    #list-other3:not([style*="display: none"]),
+    #list-other4:not([style*="display: none"]),
+    #list-other5:not([style*="display: none"]),
+    #list-other6:not([style*="display: none"]),
+    #list-other7:not([style*="display: none"]),
+    #list-other8:not([style*="display: none"]),
+    #list-other9:not([style*="display: none"]),
+    #list-other10:not([style*="display: none"]) { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
     .camp-item { border: 1px solid #eee; border-radius: 8px; }
     body.grid-mode #campBody, 
     body.grid-mode #list-camping:not([style*="display: none"]), 
-    body.grid-mode #list-other:not([style*="display: none"]) { grid-template-columns: repeat(3, 1fr) !important; }
+    body.grid-mode #list-other:not([style*="display: none"]),
+    body.grid-mode #list-other3:not([style*="display: none"]),
+    body.grid-mode #list-other4:not([style*="display: none"]),
+    body.grid-mode #list-other5:not([style*="display: none"]),
+    body.grid-mode #list-other6:not([style*="display: none"]),
+    body.grid-mode #list-other7:not([style*="display: none"]),
+    body.grid-mode #list-other8:not([style*="display: none"]),
+    body.grid-mode #list-other9:not([style*="display: none"]),
+    body.grid-mode #list-other10:not([style*="display: none"]) { grid-template-columns: repeat(3, 1fr) !important; }
 }
 
 @media (min-width: 1024px) {
     #campBody, 
     #list-camping:not([style*="display: none"]), 
-    #list-other:not([style*="display: none"]) { grid-template-columns: repeat(3, 1fr); }
+    #list-other:not([style*="display: none"]),
+    #list-other3:not([style*="display: none"]),
+    #list-other4:not([style*="display: none"]),
+    #list-other5:not([style*="display: none"]),
+    #list-other6:not([style*="display: none"]),
+    #list-other7:not([style*="display: none"]),
+    #list-other8:not([style*="display: none"]),
+    #list-other9:not([style*="display: none"]),
+    #list-other10:not([style*="display: none"]) { grid-template-columns: repeat(3, 1fr); }
     body.grid-mode #campBody, 
     body.grid-mode #list-camping:not([style*="display: none"]), 
-    body.grid-mode #list-other:not([style*="display: none"]) { grid-template-columns: repeat(4, 1fr) !important; }
+    body.grid-mode #list-other:not([style*="display: none"]),
+    body.grid-mode #list-other3:not([style*="display: none"]),
+    body.grid-mode #list-other4:not([style*="display: none"]),
+    body.grid-mode #list-other5:not([style*="display: none"]),
+    body.grid-mode #list-other6:not([style*="display: none"]),
+    body.grid-mode #list-other7:not([style*="display: none"]),
+    body.grid-mode #list-other8:not([style*="display: none"]),
+    body.grid-mode #list-other9:not([style*="display: none"]),
+    body.grid-mode #list-other10:not([style*="display: none"]) { grid-template-columns: repeat(4, 1fr) !important; }
 }
 
 .footer { padding: 40px 20px; text-align: center; background: #f8faf8; border-top: 1px solid #eee; }
