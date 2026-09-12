@@ -62,7 +62,7 @@ async function fetchCampData() {
         const areas = new Set();
 
         const createCampItem = (cols, isFriendList = false) => {
-            const [cat, count, date, name, v1, v2, v3, , , altitude, location, tentCount, weather, photoLinks] = cols;
+            const [cat, count, date, name, v1, v2, v3, playlist, , altitude, location, tentCount, weather, photoLinks] = cols;
             if (location && location.trim() !== "") {
                 const cleanLoc = location.trim().replace(/^[\[\(\{（【]+|[\]\}\)）】]+$/g, '').trim();
                 if (cleanLoc) {
@@ -115,6 +115,10 @@ async function fetchCampData() {
                     idBtnsHtml += `<div class="id-btn red-mode ${index===0 ? 'active' : ''}" onclick="event.stopPropagation(); if(window.switchThumb) switchThumb(this, '${safeVid}')"><i class="fas ${iconClass}"></i></div>`;
                 }
             });
+            if (playlist && playlist.trim() !== "") {
+                let safePl = playlist.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                idBtnsHtml += `<div class="id-btn red-mode" onclick="event.stopPropagation(); if(window.openVid) openVid('${safePl}')"><i class="fas fa-list"></i></div>`;
+            }
             if (photoLinks && photoLinks.includes("http")) {
                 let safeAlbum = photoLinks.replace(/\n/g, ' ').replace(/`/g, '\\`').replace(/'/g, "\\'");
                 idBtnsHtml += `<span class="album-icon-btn" onclick="event.stopPropagation(); if(window.openAlbum) openAlbum(\`${safeAlbum}\`)">📸</span>`;
@@ -190,7 +194,7 @@ async function fetchCampData() {
                 const countEl = document.getElementById(countIds[idx]);
                 if (countEl) {
                     const totalItems = container.querySelectorAll('.camp-item').length;
-                    countEl.innerText = `(${totalItems})`;
+                    countEl.innerText = `🎬 ${totalItems}`;
                 }
             }
         });
