@@ -15,10 +15,10 @@ function searchTable() {
     document.querySelectorAll(".camp-item").forEach(item => { 
         const text = item.textContent.toUpperCase();
         const locEl = item.querySelector(".camp-location");
-        const locText = locEl ? locEl.textContent.toUpperCase() : text;
+        const locText = locEl ? locEl.textContent.toUpperCase() : "";
 
         const matchYear = currentYearFilter === "" || text.includes(currentYearFilter);
-        const matchArea = currentAreaFilter === "" || locText.includes(currentAreaFilter.toUpperCase()) || text.includes(currentAreaFilter.toUpperCase());
+        const matchArea = currentAreaFilter === "" || locText.includes(currentAreaFilter.toUpperCase());
         const matchSearch = searchInput === "" || text.includes(searchInput);
 
         const isMatch = matchYear && matchArea && matchSearch;
