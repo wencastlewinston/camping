@@ -9,8 +9,9 @@
 .strip-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; cursor: pointer; opacity: 0.4; }
 .strip-thumb.active { opacity: 1; border: 2px solid var(--primary-light); }
 
-.playlist-card { margin: 10px 15px; border-radius: 10px; overflow: hidden; border: 2px solid #43a047; }
+.playlist-card { margin: 10px 15px; border-radius: 10px; overflow: hidden; border: 2px solid #43a047; background: #fff; }
 .playlist-header { background: #43a047; color: white; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; }
+.playlist-content { padding: 5px 0; background: #fff; }
 .revisit-tag { font-size: 10px; color: var(--primary); font-weight: bold; background: rgba(45, 90, 39, 0.1); padding: 2px 6px; border-radius: 8px; display: inline-flex; align-items: center; gap: 2px; border: 1px solid rgba(45, 90, 39, 0.2); white-space: nowrap; }
 
 .tent-count-tag { margin-top: 2px; display: inline-flex; }
@@ -28,6 +29,7 @@
     .strip-thumb { width: 80px; height: 80px; }
     .playlist-card { margin: 20px; }
     .playlist-header { padding: 18px 24px; font-size: 18px; }
+    .playlist-content { padding: 10px 0; }
     .altitude-row { max-width: 150px; height: 16px; }
     .altitude-tag { font-size: 11px; }
 }
