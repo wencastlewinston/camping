@@ -63,7 +63,11 @@ async function fetchCampData() {
 
         const createCampItem = (cols, isFriendList = false) => {
             const [cat, count, date, name, v1, v2, v3, , , altitude, location, tentCount, weather, photoLinks] = cols;
-            if (location && !isFriendList) { const city = location.substring(0, 2); if (city) areas.add(city); }
+            if (location && location.trim() !== "") {
+                const locStr = location.trim();
+                const city = locStr.length >= 2 ? locStr.substring(0, 2) : locStr;
+                if (city) areas.add(city);
+            }
 
             let seasonIcon = "";
             if (date) {
@@ -184,7 +188,7 @@ async function fetchCampData() {
                 const countEl = document.getElementById(countIds[idx]);
                 if (countEl) {
                     const totalItems = container.querySelectorAll('.camp-item').length;
-                    countEl.innerText = `(${totalItems})`;
+                    countEl.innerText = `🎬 ${totalItems}`;
                 }
             }
         });
