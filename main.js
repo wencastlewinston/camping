@@ -1,12 +1,12 @@
 async function fetchCampData() {
     try {
-        const [resMain, resFriend] = await Promise.all([
-            fetch(sheetUrl),
-            fetch(sheetUrlFriend)
-        ]);
+        const urls = [
+            sheetUrl1, sheetUrl2, sheetUrl3, sheetUrl4, sheetUrl5,
+            sheetUrl6, sheetUrl7, sheetUrl8, sheetUrl9, sheetUrl10
+        ];
 
-        const dataMain = await resMain.text();
-        const dataFriend = await resFriend.text();
+        const responses = await Promise.all(urls.map(url => fetch(url)));
+        const dataTexts = await Promise.all(responses.map(res => res.text()));
 
         const parseCsv = (text) => {
             const rows = [];
@@ -22,25 +22,35 @@ async function fetchCampData() {
             return rows;
         };
 
-        const rowsMain = parseCsv(dataMain);
-        const rowsFriend = parseCsv(dataFriend);
+        const allRows = dataTexts.map(text => parseCsv(text));
 
         const campBody = document.getElementById('campBody');
-        const listCamping = document.getElementById('list-camping');
-        const listOther = document.getElementById('list-other');
+        const listContainers = [
+            document.getElementById('list-camping'),
+            document.getElementById('list-other'),
+            document.getElementById('list-other3'),
+            document.getElementById('list-other4'),
+            document.getElementById('list-other5'),
+            document.getElementById('list-other6'),
+            document.getElementById('list-other7'),
+            document.getElementById('list-other8'),
+            document.getElementById('list-other9'),
+            document.getElementById('list-other10')
+        ];
         const areaBar = document.getElementById('area-tool-bar');
-        
+
         if (campBody) campBody.innerHTML = "";
-        if (listCamping) listCamping.innerHTML = "";
-        if (listOther) listOther.innerHTML = "";
-        
+        listContainers.forEach(container => {
+            if (container) container.innerHTML = "";
+        });
+
         const currentTrack = {};
         const areas = new Set();
 
         const createCampItem = (cols, isFriendList = false) => {
             const [cat, count, date, name, v1, v2, v3, , , altitude, location, tentCount, weather, photoLinks] = cols;
             if (location && !isFriendList) { const city = location.substring(0, 2); if (city) areas.add(city); }
-            
+
             let seasonIcon = "";
             if (date) {
                 const month = parseInt(date.split('.')[1]);
@@ -67,7 +77,7 @@ async function fetchCampData() {
                 const thisVisitNum = currentTrack[name];
                 revisitHtml = (thisVisitNum > 1) ? `<div class="revisit-tag" data-visit="${thisVisitNum}">${"🏅".repeat(thisVisitNum)} 第 ${thisVisitNum} 訪</div>` : "";
             }
-            
+
             let altHtml = "";
             if (altitude) {
                 const altV = parseInt(altitude);
@@ -92,7 +102,7 @@ async function fetchCampData() {
             const item = document.createElement('div');
             item.className = `camp-item fade-in ${isUpcoming ? 'is-upcoming' : ''}`;
             const yt1 = (window.parseYoutube) ? parseYoutube(v1) : null;
-            
+
             item.innerHTML = `
                 <div class="col-thumb">
                     <div class="thumb-box" ${(!isUpcoming && yt1) ? `onclick="openVid('${v1}')"` : ''}>
@@ -124,23 +134,27 @@ async function fetchCampData() {
             return cols;
         };
 
-        rowsMain.slice(1).forEach((row) => {
+        allRows[0].slice(1).forEach((row) => {
             const cols = processRow(row);
             if (cols.length < 4) return;
             const { item, cat } = createCampItem(cols, false);
             if (cat === "露營") {
-                if (listCamping) listCamping.appendChild(item);
+                if (listContainers[0]) listContainers[0].appendChild(item);
             } else {
                 if (campBody) campBody.prepend(item);
             }
         });
 
-        rowsFriend.slice(1).forEach((row) => {
-            const cols = processRow(row);
-            if (cols.length < 4) return;
-            const { item } = createCampItem(cols, true);
-            if (listOther) listOther.appendChild(item);
-        });
+        for (let i = 1; i < 10; i++) {
+            if (allRows[i]) {
+                allRows[i].slice(1).forEach((row) => {
+                    const cols = processRow(row);
+                    if (cols.length < 4) return;
+                    const { item } = createCampItem(cols, true);
+                    if (listContainers[i]) listContainers[i].appendChild(item);
+                });
+            }
+        }
 
         if (areaBar) {
             areaBar.innerHTML = '<div class="tag active area-tag" onclick="filterData(\'\', this, \'area\')">所有地區</div>';
@@ -151,10 +165,10 @@ async function fetchCampData() {
                 areaBar.appendChild(tag);
             });
         }
-        
+
         if(window.updateStats) updateStats();
 
-    } catch (e) { 
+    } catch (e) {
         console.error("載入失敗：", e);
     }
 }
