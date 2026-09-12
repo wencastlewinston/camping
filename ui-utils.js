@@ -48,7 +48,7 @@ function updateStats() {
 function toggleView() { document.body.classList.toggle("grid-mode"); }
 
 function togglePlaylist(type = 'camping') { 
-    const types = ['camping', 'other'];
+    const types = ['camping', 'other', 'other3', 'other4', 'other5', 'other6', 'other7', 'other8', 'other9', 'other10'];
     types.forEach(t => {
         if (t !== type) {
             const otherContent = document.getElementById(`list-${t}`);
@@ -68,10 +68,20 @@ function togglePlaylist(type = 'camping') {
 }
 
 function reverseAll() { 
-    const campBody = document.getElementById('campBody'); 
-    const listCamping = document.getElementById('list-camping'); 
-    const listOther = document.getElementById('list-other'); 
-    [campBody, listCamping, listOther].forEach(box => { 
+    const boxes = [
+        document.getElementById('campBody'),
+        document.getElementById('list-camping'),
+        document.getElementById('list-other'),
+        document.getElementById('list-other3'),
+        document.getElementById('list-other4'),
+        document.getElementById('list-other5'),
+        document.getElementById('list-other6'),
+        document.getElementById('list-other7'),
+        document.getElementById('list-other8'),
+        document.getElementById('list-other9'),
+        document.getElementById('list-other10')
+    ];
+    boxes.forEach(box => { 
         if (box) {
             const items = Array.from(box.children); 
             box.innerHTML = ''; items.reverse().forEach(item => box.appendChild(item)); 
