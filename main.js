@@ -66,7 +66,8 @@ async function fetchCampData() {
             if (location && location.trim() !== "") {
                 const cleanLoc = location.trim().replace(/^[\[\(\{（【]+|[\]\}\)）】]+$/g, '').trim();
                 if (cleanLoc) {
-                    areas.add(cleanLoc);
+                    const mainCity = cleanLoc.length >= 2 ? cleanLoc.substring(0, 2) : cleanLoc;
+                    if (mainCity) areas.add(mainCity);
                 }
             }
 
