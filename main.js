@@ -1,18 +1,29 @@
 async function fetchCampData() {
     try {
-        const response = await fetch(sheetUrl);
-        const data = await response.text();
-        const rows = [];
-        let currentRow = "";
-        let insideQuotes = false;
+        const [resMain, resFriend] = await Promise.all([
+            fetch(sheetUrl),
+            fetch(sheetUrlFriend)
+        ]);
 
-        for (let i = 0; i < data.length; i++) {
-            const char = data[i];
-            if (char === '"') insideQuotes = !insideQuotes;
-            if (char === '\n' && !insideQuotes) { rows.push(currentRow); currentRow = ""; }
-            else { currentRow += char; }
-        }
-        if (currentRow) rows.push(currentRow);
+        const dataMain = await resMain.text();
+        const dataFriend = await resFriend.text();
+
+        const parseCsv = (text) => {
+            const rows = [];
+            let currentRow = "";
+            let insideQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                if (char === '"') insideQuotes = !insideQuotes;
+                if (char === '\n' && !insideQuotes) { rows.push(currentRow); currentRow = ""; }
+                else { currentRow += char; }
+            }
+            if (currentRow) rows.push(currentRow);
+            return rows;
+        };
+
+        const rowsMain = parseCsv(dataMain);
+        const rowsFriend = parseCsv(dataFriend);
 
         const campBody = document.getElementById('campBody');
         const listCamping = document.getElementById('list-camping');
@@ -26,19 +37,7 @@ async function fetchCampData() {
         const currentTrack = {};
         const areas = new Set();
 
-        rows.slice(1).forEach((row) => {
-            const cols = [];
-            let currCol = "";
-            let inQ = false;
-            for (let i = 0; i < row.length; i++) {
-                const c = row[i];
-                if (c === '"') inQ = !inQ;
-                else if (c === ',' && !inQ) { cols.push(currCol.trim()); currCol = ""; }
-                else currCol += c;
-            }
-            cols.push(currCol.trim());
-            if (cols.length < 4) return;
-
+        const createCampItem = (cols) => {
             const [cat, count, date, name, v1, v2, v3, , , altitude, location, tentCount, weather, photoLinks] = cols;
             if (location) { const city = location.substring(0, 2); if (city) areas.add(city); }
             
@@ -105,15 +104,39 @@ async function fetchCampData() {
                     <div class="camp-name-row"><span class="camp-name">${name}</span>${isUpcoming ? '<span class="status-badge">期待中</span>' : ''}</div>
                     ${altHtml}${tentHtml}
                 </div>`;
-            
-            const category = cat ? cat.trim() : "";
-            if (category === "露營") {
+            return { item, cat: cat ? cat.trim() : "" };
+        };
+
+        const processRow = (row) => {
+            const cols = [];
+            let currCol = "";
+            let inQ = false;
+            for (let i = 0; i < row.length; i++) {
+                const c = row[i];
+                if (c === '"') inQ = !inQ;
+                else if (c === ',' && !inQ) { cols.push(currCol.trim()); currCol = ""; }
+                else currCol += c;
+            }
+            cols.push(currCol.trim());
+            return cols;
+        };
+
+        rowsMain.slice(1).forEach((row) => {
+            const cols = processRow(row);
+            if (cols.length < 4) return;
+            const { item, cat } = createCampItem(cols);
+            if (cat === "露營") {
                 if (listCamping) listCamping.appendChild(item);
-            } else if (category === "友情" || category === "其他" || category === "影片") {
-                if (listOther) listOther.appendChild(item);
             } else {
                 if (campBody) campBody.prepend(item);
             }
+        });
+
+        rowsFriend.slice(1).forEach((row) => {
+            const cols = processRow(row);
+            if (cols.length < 4) return;
+            const { item } = createCampItem(cols);
+            if (listOther) listOther.appendChild(item);
         });
 
         if (areaBar) {
