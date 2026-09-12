@@ -42,11 +42,22 @@ function updateStats() {
 function toggleView() { document.body.classList.toggle("grid-mode"); }
 
 function togglePlaylist(type = 'camping') { 
+    const types = ['camping', 'other'];
+    types.forEach(t => {
+        if (t !== type) {
+            const otherContent = document.getElementById(`list-${t}`);
+            const otherArrow = document.getElementById(`arrow-${t}`);
+            if (otherContent) otherContent.style.display = "none";
+            if (otherArrow) otherArrow.innerText = "展開";
+        }
+    });
+
     const content = document.getElementById(`list-${type}`); 
     const arrow = document.getElementById(`arrow-${type}`);
     if (content) {
-        content.style.display = (content.style.display === "none") ? "block" : "none"; 
-        if (arrow) arrow.innerText = (content.style.display === "none") ? "展開" : "收合";
+        const isHidden = content.style.display === "none";
+        content.style.display = isHidden ? "block" : "none"; 
+        if (arrow) arrow.innerText = isHidden ? "收合" : "展開";
     }
 }
 
