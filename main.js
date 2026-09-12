@@ -91,22 +91,27 @@ async function fetchCampData() {
             [v1, v2, v3].forEach((vid, index) => {
                 if (vid && vid.trim() !== "") {
                     let iconClass = index === 0 ? 'fa-play' : 'fa-stop';
-                    idBtnsHtml += `<div class="id-btn red-mode ${index===0 ? 'active' : ''}" onclick="event.stopPropagation(); if(window.switchThumb) switchThumb(this, '${vid}')"><i class="fas ${iconClass}"></i></div>`;
+                    let safeVid = vid.replace(/'/g, "\\'");
+                    idBtnsHtml += `<div class="id-btn red-mode ${index===0 ? 'active' : ''}" onclick="event.stopPropagation(); if(window.switchThumb) switchThumb(this, '${safeVid}')"><i class="fas ${iconClass}"></i></div>`;
                 }
             });
             if (photoLinks && photoLinks.includes("http")) {
-                idBtnsHtml += `<span class="album-icon-btn" onclick="event.stopPropagation(); if(window.openAlbum) openAlbum(\`${photoLinks.replace(/\n/g, ' ')}\`)">📸</span>`;
+                let safeAlbum = photoLinks.replace(/\n/g, ' ').replace(/`/g, '\\`');
+                idBtnsHtml += `<span class="album-icon-btn" onclick="event.stopPropagation(); if(window.openAlbum) openAlbum(\`${safeAlbum}\`)">📸</span>`;
             }
             idBtnsHtml += `</div>`;
 
             const item = document.createElement('div');
             item.className = `camp-item fade-in ${isUpcoming ? 'is-upcoming' : ''}`;
             const yt1 = (window.parseYoutube) ? parseYoutube(v1) : null;
+            const thumbUrl = yt1 ? (yt1.thumb || `https://img.youtube.com/vi/${yt1.id}/mqdefault.jpg`) : '';
+
+            let safeV1 = v1 ? v1.replace(/'/g, "\\'") : '';
 
             item.innerHTML = `
                 <div class="col-thumb">
-                    <div class="thumb-box" ${(!isUpcoming && yt1) ? `onclick="openVid('${v1}')"` : ''}>
-                        ${isUpcoming ? `<div class="upcoming-thumb"><span class="center-text">預備..</span></div>` : `<img src="https://img.youtube.com/vi/${yt1 ? yt1.id : ''}/mqdefault.jpg" class="camp-thumb-img" loading="lazy">`}
+                    <div class="thumb-box" ${(!isUpcoming && yt1) ? `onclick="openVid('${safeV1}')"` : ''}>
+                        ${isUpcoming ? `<div class="upcoming-thumb"><span class="center-text">預備..</span></div>` : `<img src="${thumbUrl}" class="camp-thumb-img" loading="lazy">`}
                         <div class="count-badge">${count}</div>
                     </div>
                     ${isUpcoming ? '' : idBtnsHtml}${(!isUpcoming && revisitHtml) ? revisitHtml : ''}
@@ -157,10 +162,17 @@ async function fetchCampData() {
         }
 
         if (areaBar) {
-            areaBar.innerHTML = '<div class="tag active area-tag" onclick="filterData(\'\', this, \'area\')">所有地區</div>';
+            areaBar.innerHTML = '';
+            const allTag = document.createElement('div');
+            allTag.className = 'tag active area-tag';
+            allTag.innerText = '所有地區';
+            allTag.onclick = function() { filterData('', this, 'area'); };
+            areaBar.appendChild(allTag);
+
             Array.from(areas).sort().forEach(city => {
                 const tag = document.createElement('div');
-                tag.className = 'tag area-tag'; tag.innerText = city;
+                tag.className = 'tag area-tag'; 
+                tag.innerText = city;
                 tag.onclick = function() { filterData(city, this, 'area'); };
                 areaBar.appendChild(tag);
             });
