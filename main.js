@@ -91,22 +91,26 @@ async function fetchCampData() {
             [v1, v2, v3].forEach((vid, index) => {
                 if (vid && vid.trim() !== "") {
                     let iconClass = index === 0 ? 'fa-play' : 'fa-stop';
-                    let safeVid = vid.replace(/'/g, "\\'");
+                    let safeVid = vid.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     idBtnsHtml += `<div class="id-btn red-mode ${index===0 ? 'active' : ''}" onclick="event.stopPropagation(); if(window.switchThumb) switchThumb(this, '${safeVid}')"><i class="fas ${iconClass}"></i></div>`;
                 }
             });
             if (photoLinks && photoLinks.includes("http")) {
-                let safeAlbum = photoLinks.replace(/\n/g, ' ').replace(/`/g, '\\`');
+                let safeAlbum = photoLinks.replace(/\n/g, ' ').replace(/`/g, '\\`').replace(/'/g, "\\'");
                 idBtnsHtml += `<span class="album-icon-btn" onclick="event.stopPropagation(); if(window.openAlbum) openAlbum(\`${safeAlbum}\`)">📸</span>`;
             }
             idBtnsHtml += `</div>`;
 
             const item = document.createElement('div');
             item.className = `camp-item fade-in ${isUpcoming ? 'is-upcoming' : ''}`;
+            
             const yt1 = (window.parseYoutube) ? parseYoutube(v1) : null;
-            const thumbUrl = yt1 ? (yt1.thumb || `https://img.youtube.com/vi/${yt1.id}/mqdefault.jpg`) : '';
+            let thumbUrl = "";
+            if (yt1) {
+                thumbUrl = `https://img.youtube.com/vi/${yt1.id}/mqdefault.jpg`;
+            }
 
-            let safeV1 = v1 ? v1.replace(/'/g, "\\'") : '';
+            let safeV1 = v1 ? v1.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
 
             item.innerHTML = `
                 <div class="col-thumb">
